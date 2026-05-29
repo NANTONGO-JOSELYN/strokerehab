@@ -452,10 +452,10 @@ class _ActionArea extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'SENSOR PLACEMENT GUIDE',
                   style: TextStyle(
                     color: AppTheme.textSecondary,
@@ -465,14 +465,14 @@ class _ActionArea extends StatelessWidget {
                     fontFamily: 'Outfit',
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _PlacementRow(
                   icon: Icons.watch_rounded,
                   label: 'Wrist Sensor',
                   detail: 'Strap firmly on your dominant wrist',
                   color: AppTheme.accentBlue,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 _PlacementRow(
                   icon: Icons.accessibility_new_rounded,
                   label: 'Lower Back Sensor',

@@ -17,9 +17,9 @@ class LiveMonitoringScreen extends StatefulWidget {
 }
 
 class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
-  int _currentExerciseIndex = 0;
+  final int _currentExerciseIndex = 0;
   int _completedReps = 0;
-  int _targetReps = 10;
+  final int _targetReps = 10;
   bool _isExercising = false;
   double _accuracyScore = 0.0;
 
@@ -156,7 +156,7 @@ class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          const Text(
                             'Accuracy',
                             style: TextStyle(
                               color: Colors.white54,
@@ -175,7 +175,7 @@ class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
                     children: [
                       Column(
                         children: [
-                          Text(
+                          const Text(
                             'Reps',
                             style: TextStyle(
                               color: Colors.white54,
@@ -220,14 +220,14 @@ class _LiveMonitoringScreenState extends State<LiveMonitoringScreen> {
             _SensorDataCard(
               icon: Icons.show_chart,
               title: 'Acceleration (m/s²)',
-              value: '${(9.8 + (DateTime.now().millisecond % 5).toDouble()).toStringAsFixed(2)}',
+              value: (9.8 + (DateTime.now().millisecond % 5).toDouble()).toStringAsFixed(2),
               unit: 'm/s²',
             ),
             const SizedBox(height: 12),
             _SensorDataCard(
               icon: Icons.settings_backup_restore,
               title: 'Rotation (°/s)',
-              value: '${(DateTime.now().millisecond % 60).toString()}',
+              value: (DateTime.now().millisecond % 60).toString(),
               unit: '°/s',
             ),
             const SizedBox(height: 24),

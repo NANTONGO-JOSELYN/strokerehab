@@ -33,12 +33,12 @@ class LiveChartWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.show_chart_rounded,
+                Icon(Icons.show_chart_rounded,
                     size: 14, color: AppTheme.textSecondary),
-                const SizedBox(width: 6),
-                const Text(
+                SizedBox(width: 6),
+                Text(
                   'LIVE ACCELEROMETER',
                   style: TextStyle(
                     color: AppTheme.textSecondary,
@@ -48,11 +48,11 @@ class LiveChartWidget extends StatelessWidget {
                     fontFamily: 'Outfit',
                   ),
                 ),
-                const Spacer(),
+                Spacer(),
                 _LegendDot(color: AppTheme.accentBlue, label: 'X'),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 _LegendDot(color: AppTheme.qualityGood, label: 'Y'),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 _LegendDot(color: AppTheme.qualityWarning, label: 'Z'),
               ],
             ),

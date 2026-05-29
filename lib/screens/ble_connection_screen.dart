@@ -160,9 +160,9 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> {
             const SizedBox(height: 24),
 
             // Available devices section
-            Text(
+            const Text(
               'Available Devices',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -171,12 +171,12 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> {
             const SizedBox(height: 8),
 
             if (_isScanning)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
                 child: Center(
                   child: Column(
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         width: 40,
                         height: 40,
                         child: CircularProgressIndicator(
@@ -184,8 +184,8 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> {
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      const Text(
+                      SizedBox(height: 12),
+                      Text(
                         'Scanning for devices...',
                         style: TextStyle(
                           color: Colors.white70,

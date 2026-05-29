@@ -15,11 +15,11 @@ class SettingsScreen extends StatelessWidget {
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          SliverAppBar(
+          const SliverAppBar(
             backgroundColor: AppTheme.background,
             floating: true,
             automaticallyImplyLeading: false,
-            title: const Text('Settings',
+            title: Text('Settings',
               style: TextStyle(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.w700, fontFamily: 'Outfit')),
           ),
           SliverPadding(
@@ -27,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 // ── Default Exercise ──
-                _SectionHeader(title: 'DEFAULT EXERCISE'),
+                const _SectionHeader(title: 'DEFAULT EXERCISE'),
                 const SizedBox(height: 10),
                 ...kExerciseNames.asMap().entries.map((e) {
                   final isSelected = e.key == provider.selectedExerciseIndex;
@@ -70,27 +70,27 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // ── About ──
-                _SectionHeader(title: 'ABOUT'),
+                const _SectionHeader(title: 'ABOUT'),
                 const SizedBox(height: 10),
-                _InfoCard(
+                const _InfoCard(
                   icon: Icons.bluetooth_rounded,
                   title: 'BLE Device Name',
                   subtitle: 'RehabCoach-S1',
                 ),
                 const SizedBox(height: 8),
-                _InfoCard(
+                const _InfoCard(
                   icon: Icons.memory_rounded,
                   title: 'AI Model',
                   subtitle: 'Random Forest — ONNX (83.82% accuracy)',
                 ),
                 const SizedBox(height: 8),
-                _InfoCard(
+                const _InfoCard(
                   icon: Icons.timer_rounded,
                   title: 'Window Size',
                   subtitle: '10 seconds (500 frames @ 50 Hz)',
                 ),
                 const SizedBox(height: 8),
-                _InfoCard(
+                const _InfoCard(
                   icon: Icons.analytics_rounded,
                   title: 'Feature Vector',
                   subtitle: '424 engineered features (Phase 2)',

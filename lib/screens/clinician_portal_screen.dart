@@ -376,12 +376,12 @@ class _InsightsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Clinical Insights',
             style: TextStyle(
               color: Colors.white,
@@ -389,7 +389,7 @@ class _InsightsTab extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _InsightCard(
             title: 'High Performers',
             description: '3 patients maintaining 80%+ quality scores',

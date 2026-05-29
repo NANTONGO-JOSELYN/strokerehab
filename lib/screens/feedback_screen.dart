@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/exercise_quality_result.dart';
 import '../providers/rehab_session_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/quality_badge.dart';

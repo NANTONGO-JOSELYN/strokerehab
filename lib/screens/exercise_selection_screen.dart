@@ -259,7 +259,7 @@ class _ExerciseCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.track_changes, size: 14, color: Colors.white54),
+                      const Icon(Icons.track_changes, size: 14, color: Colors.white54),
                       const SizedBox(width: 4),
                       Text(
                         exercise.targetArea,
@@ -269,7 +269,7 @@ class _ExerciseCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Icon(Icons.repeat, size: 14, color: Colors.white54),
+                      const Icon(Icons.repeat, size: 14, color: Colors.white54),
                       const SizedBox(width: 4),
                       Text(
                         '${exercise.setsRecommended}x${exercise.repsPerSet}',

@@ -81,7 +81,7 @@ class _EmptyHistory extends StatelessWidget {
         children: [
           Container(
             width: 90, height: 90,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.surfaceCard),
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: AppTheme.surfaceCard),
             child: const Icon(Icons.history_rounded, size: 40, color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 20),

@@ -102,7 +102,7 @@ class ResultsCorrectionScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
+                          const Text(
                             'Quality Score',
                             style: TextStyle(
                               color: Colors.white54,
@@ -124,12 +124,12 @@ class ResultsCorrectionScreen extends StatelessWidget {
                         value: '$completedReps/$targetReps',
                         color: Colors.blue,
                       ),
-                      _StatItem(
+                      const _StatItem(
                         label: 'Duration',
                         value: '45s',
                         color: Colors.green,
                       ),
-                      _StatItem(
+                      const _StatItem(
                         label: 'Speed',
                         value: 'Moderate',
                         color: Colors.orange,

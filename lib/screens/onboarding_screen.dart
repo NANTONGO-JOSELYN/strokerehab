@@ -269,20 +269,20 @@ class _OnboardingPage2 extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Column(
+            const Column(
               children: [
                 _FeatureCard(
                   icon: Icons.bluetooth,
                   title: 'Connect Your Device',
                   description: 'Pair your IMU sensor via Bluetooth for real-time data',
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _FeatureCard(
                   icon: Icons.run_circle,
                   title: 'Complete Exercises',
                   description: 'Follow guided exercises tailored to your recovery stage',
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _FeatureCard(
                   icon: Icons.assessment,
                   title: 'Get Instant Feedback',

@@ -1,6 +1,4 @@
-import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 
 import '../models/exercise_quality_result.dart';
 import '../theme/app_theme.dart';

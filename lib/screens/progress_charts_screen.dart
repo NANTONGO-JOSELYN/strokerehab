@@ -50,7 +50,7 @@ class _ProgressChartsScreenState extends State<ProgressChartsScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
+        children: const [
           _OverviewTab(),
           _QualityTab(),
           _SessionsTab(),
@@ -80,7 +80,7 @@ class _OverviewTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Row(
+          const Row(
             children: [
               _StatCard(
                 title: 'Sessions',
@@ -89,7 +89,7 @@ class _OverviewTab extends StatelessWidget {
                 icon: Icons.fitness_center,
                 color: Colors.blue,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               _StatCard(
                 title: 'Total Reps',
                 value: '156',
@@ -100,7 +100,7 @@ class _OverviewTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
+          const Row(
             children: [
               _StatCard(
                 title: 'Avg Quality',
@@ -109,7 +109,7 @@ class _OverviewTab extends StatelessWidget {
                 icon: Icons.trending_up,
                 color: Colors.orange,
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               _StatCard(
                 title: 'Streak',
                 value: '5',
@@ -137,7 +137,7 @@ class _OverviewTab extends StatelessWidget {
               color: const Color(0xFF1A1F2B),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: _SimpleLineChart(),
+            child: const _SimpleLineChart(),
           ),
         ],
       ),
@@ -150,12 +150,12 @@ class _QualityTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Exercise Quality Breakdown',
             style: TextStyle(
               color: Colors.white,
@@ -163,7 +163,7 @@ class _QualityTab extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _QualityItem(
             exercise: 'Shoulder Flexion',
             quality: 85,
@@ -200,12 +200,12 @@ class _SessionsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Recent Sessions',
             style: TextStyle(
               color: Colors.white,
@@ -213,7 +213,7 @@ class _SessionsTab extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           _SessionItem(
             date: 'Today • 2:30 PM',
             exercises: 'Shoulder Flexion, Elbow Flexion',
@@ -316,7 +316,7 @@ class _SimpleLineChart extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceLotevenly,
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
+              children: const [
                 _BarChart(value: 65, day: 'Mon'),
                 _BarChart(value: 70, day: 'Tue'),
                 _BarChart(value: 68, day: 'Wed'),

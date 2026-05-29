@@ -109,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Back button
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
-                    child: Icon(
+                    child: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
                       size: 24,
@@ -413,7 +413,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         onChanged: (value) =>
                             setState(() => _agreeToTerms = value ?? false),
                         checkColor: Colors.blue[900],
-                        fillColor: MaterialStateProperty.all(Colors.white),
+                        fillColor: WidgetStateProperty.all(Colors.white),
                       ),
                       Expanded(
                         child: GestureDetector(

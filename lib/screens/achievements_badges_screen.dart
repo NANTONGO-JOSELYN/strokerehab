@@ -280,7 +280,7 @@ class _AchievementCard extends StatelessWidget {
               ),
             ),
           if (isUnlocked)
-            Positioned(
+            const Positioned(
               top: 8,
               right: 8,
               child: Icon(

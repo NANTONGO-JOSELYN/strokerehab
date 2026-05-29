@@ -282,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onChanged: (value) =>
                                 setState(() => _rememberMe = value ?? false),
                             checkColor: Colors.blue[900],
-                            fillColor: MaterialStateProperty.all(Colors.white),
+                            fillColor: WidgetStateProperty.all(Colors.white),
                           ),
                           Text(
                             'Remember me',
