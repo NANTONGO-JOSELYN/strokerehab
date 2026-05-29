@@ -1,0 +1,94 @@
+{
+  "exercises": {
+    "0": {
+      "name": "Shoulder Flexion",
+      "recommendations": {
+        "poor": [
+          { "message": "Lift your arm higher — aim for shoulder height or above.", "category": "movement", "priority": "high" },
+          { "message": "Keep your arm straight and controlled throughout the movement.", "category": "alignment", "priority": "high" },
+          { "message": "Avoid jerky motions. Move smoothly and deliberately.", "category": "pace", "priority": "medium" }
+        ],
+        "needs_improvement": [
+          { "message": "Almost there! Increase the height of your lift slightly.", "category": "movement", "priority": "medium" },
+          { "message": "Maintain consistent speed throughout the entire motion.", "category": "pace", "priority": "medium" },
+          { "message": "Keep your wrist stable as you lift.", "category": "alignment", "priority": "low" }
+        ]
+      }
+    },
+    "1": {
+      "name": "Elbow Extension",
+      "recommendations": {
+        "poor": [
+          { "message": "Extend your arm more fully — straighten the elbow completely.", "category": "movement", "priority": "high" },
+          { "message": "Control the descent. Avoid dropping your arm too quickly.", "category": "pace", "priority": "high" },
+          { "message": "Your lowering motion should be as controlled as the lift.", "category": "movement", "priority": "medium" }
+        ],
+        "needs_improvement": [
+          { "message": "Your lowering speed is slightly inconsistent. Smooth it out.", "category": "pace", "priority": "medium" },
+          { "message": "Slight wobbling detected. Keep your core engaged.", "category": "alignment", "priority": "medium" },
+          { "message": "Almost perfect! Fine-tune your descent control.", "category": "movement", "priority": "low" }
+        ]
+      }
+    },
+    "2": {
+      "name": "Wrist Rotation",
+      "recommendations": {
+        "poor": [
+          { "message": "Rotate your wrist through the full range of motion.", "category": "movement", "priority": "high" },
+          { "message": "Your wrist is wobbling too much. Stabilize your rotation.", "category": "alignment", "priority": "high" },
+          { "message": "Focus on smooth, controlled rotation rather than speed.", "category": "pace", "priority": "medium" }
+        ],
+        "needs_improvement": [
+          { "message": "Good rotation! Try to rotate just a bit further.", "category": "movement", "priority": "medium" },
+          { "message": "Your wrist rotation is somewhat unsteady. Focus on control.", "category": "alignment", "priority": "medium" },
+          { "message": "Minor instability detected. Relax your forearm slightly.", "category": "alignment", "priority": "low" }
+        ]
+      }
+    },
+    "3": {
+      "name": "Hip Abduction",
+      "recommendations": {
+        "poor": [
+          { "message": "Lift your leg higher — increase your range of motion.", "category": "movement", "priority": "high" },
+          { "message": "Keep your trunk upright. Avoid leaning to the side.", "category": "alignment", "priority": "high" },
+          { "message": "Your stance is unstable. Focus on your supporting leg.", "category": "alignment", "priority": "medium" }
+        ],
+        "needs_improvement": [
+          { "message": "Good height! Raise just a little more for full range.", "category": "movement", "priority": "medium" },
+          { "message": "Watch your trunk alignment. Keep it upright.", "category": "alignment", "priority": "medium" },
+          { "message": "Your balance is good. Maintain it throughout.", "category": "alignment", "priority": "low" }
+        ]
+      }
+    },
+    "4": {
+      "name": "Knee Extension",
+      "recommendations": {
+        "poor": [
+          { "message": "Extend your knee more fully — straighten the leg completely.", "category": "movement", "priority": "high" },
+          { "message": "Avoid rotating your trunk. Keep it stable.", "category": "alignment", "priority": "high" },
+          { "message": "Your movement is jerky. Move smoothly side-to-side.", "category": "pace", "priority": "medium" }
+        ],
+        "needs_improvement": [
+          { "message": "Good extension! Try to straighten just a bit further.", "category": "movement", "priority": "medium" },
+          { "message": "Your movement is almost smooth. Refine your control.", "category": "pace", "priority": "medium" },
+          { "message": "Balance is good. Just smooth out the final extension.", "category": "alignment", "priority": "low" }
+        ]
+      }
+    },
+    "5": {
+      "name": "Ankle Dorsiflexion",
+      "recommendations": {
+        "poor": [
+          { "message": "Pull your toes upward further — increase your dorsiflexion angle.", "category": "movement", "priority": "high" },
+          { "message": "Avoid excessive lateral foot movement. Keep the motion controlled.", "category": "alignment", "priority": "high" },
+          { "message": "Your movement is inconsistent. Maintain a steady rhythm.", "category": "pace", "priority": "medium" }
+        ],
+        "needs_improvement": [
+          { "message": "Good dorsiflexion! Pull your toes just a bit higher.", "category": "movement", "priority": "medium" },
+          { "message": "Your motion is almost smooth. Refine your ankle control.", "category": "pace", "priority": "medium" },
+          { "message": "Keep your heel grounded throughout the movement.", "category": "alignment", "priority": "low" }
+        ]
+      }
+    }
+  }
+}
