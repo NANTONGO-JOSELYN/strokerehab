@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import '../services/ble_manager.dart';
 import '../theme/app_theme.dart';
 
-/// Dual-sensor status panel — shows Wrist and Lower Back sensors individually.
+/// Tri-sensor status panel — shows Wrist A, Wrist B and Trunk sensors individually.
 class SensorStatusBar extends StatelessWidget {
   final BleConnectionState state;
   final String deviceName;
   final int frameCount;
-  final bool wristConnected;
-  final bool lowerBackConnected;
+  final bool wristAConnected;
+  final bool wristBConnected;
+  final bool trunkConnected;
   final bool isSimulated;
 
   const SensorStatusBar({
@@ -17,15 +18,15 @@ class SensorStatusBar extends StatelessWidget {
     required this.state,
     required this.deviceName,
     required this.frameCount,
-    required this.wristConnected,
-    required this.lowerBackConnected,
+    required this.wristAConnected,
+    required this.wristBConnected,
+    required this.trunkConnected,
     required this.isSimulated,
   });
 
   @override
   Widget build(BuildContext context) {
-    final anyConnected = wristConnected || lowerBackConnected;
-    final bothConnected = wristConnected && lowerBackConnected;
+    final allConnected = wristAConnected && wristBConnected && trunkConnected;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +51,8 @@ class SensorStatusBar extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.amber.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.amber.withValues(alpha: 0.4)),
+                  border:
+                      Border.all(color: Colors.amber.withValues(alpha: 0.4)),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
@@ -69,21 +71,23 @@ class SensorStatusBar extends StatelessWidget {
                   ],
                 ),
               )
-            else if (bothConnected)
+            else if (allConnected)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppTheme.qualityGood.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.qualityGood.withValues(alpha: 0.4)),
+                  border: Border.all(
+                      color: AppTheme.qualityGood.withValues(alpha: 0.4)),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle_rounded, size: 10, color: AppTheme.qualityGood),
+                    Icon(Icons.check_circle_rounded,
+                        size: 10, color: AppTheme.qualityGood),
                     SizedBox(width: 4),
                     Text(
-                      'BOTH READY',
+                      'ALL READY',
                       style: TextStyle(
                         color: AppTheme.qualityGood,
                         fontSize: 10,
@@ -102,25 +106,37 @@ class SensorStatusBar extends StatelessWidget {
           children: [
             Expanded(
               child: _SensorCard(
-                label: 'Wrist Sensor',
+                label: 'Wrist A',
                 placement: 'Dominant Wrist',
                 icon: Icons.watch_rounded,
-                isConnected: wristConnected,
+                isConnected: wristAConnected,
                 isScanning: state == BleConnectionState.scanning ||
                     state == BleConnectionState.connecting,
-                frameCount: wristConnected ? frameCount : 0,
+                frameCount: wristAConnected ? frameCount : 0,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: _SensorCard(
-                label: 'Lower Back',
-                placement: 'Lumbar Region',
-                icon: Icons.accessibility_new_rounded,
-                isConnected: lowerBackConnected,
+                label: 'Wrist B',
+                placement: 'Non-dominant Wrist',
+                icon: Icons.watch_rounded,
+                isConnected: wristBConnected,
                 isScanning: state == BleConnectionState.scanning ||
                     state == BleConnectionState.connecting,
-                frameCount: lowerBackConnected ? frameCount : 0,
+                frameCount: wristBConnected ? frameCount : 0,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _SensorCard(
+                label: 'Trunk',
+                placement: 'Lumbar Region',
+                icon: Icons.accessibility_new_rounded,
+                isConnected: trunkConnected,
+                isScanning: state == BleConnectionState.scanning ||
+                    state == BleConnectionState.connecting,
+                frameCount: trunkConnected ? frameCount : 0,
               ),
             ),
           ],
@@ -230,7 +246,8 @@ class _PulseDot extends StatefulWidget {
   State<_PulseDot> createState() => _PulseDotState();
 }
 
-class _PulseDotState extends State<_PulseDot> with SingleTickerProviderStateMixin {
+class _PulseDotState extends State<_PulseDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
 

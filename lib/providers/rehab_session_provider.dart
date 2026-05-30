@@ -37,17 +37,32 @@ class RehabSessionProvider extends ChangeNotifier {
   // ── Connection state ──────────────────────────────────────────────────────
   BleConnectionState _connectionState = BleConnectionState.idle;
   BleConnectionState get connectionState => _connectionState;
-  
+
   bool _isSimulated = false;
   bool get isSimulated => _isSimulated;
 
-  bool _wristConnected = false;
-  bool get wristConnected => _wristConnected || (connectionState == BleConnectionState.connected && !_isSimulated);
+  bool _wristAConnected = false;
+  bool _wristBConnected = false;
+  bool _trunkConnected = false;
 
-  bool _lowerBackConnected = false;
-  bool get lowerBackConnected => _lowerBackConnected || (connectionState == BleConnectionState.connected && !_isSimulated);
+  bool get wristAConnected =>
+      _wristAConnected ||
+      (connectionState == BleConnectionState.connected && !_isSimulated);
 
-  bool get isConnected => (connectionState == BleConnectionState.connected) || (_wristConnected && _lowerBackConnected);
+  bool get wristBConnected =>
+      _wristBConnected ||
+      (connectionState == BleConnectionState.connected && !_isSimulated);
+
+  bool get trunkConnected =>
+      _trunkConnected ||
+      (connectionState == BleConnectionState.connected && !_isSimulated);
+
+  bool get wristConnected => wristAConnected || wristBConnected;
+
+  bool get lowerBackConnected => trunkConnected;
+
+  bool get isConnected =>
+      (_wristAConnected && _wristBConnected && _trunkConnected) || _isSimulated;
 
   String _deviceName = '';
   String get deviceName => _deviceName;
@@ -55,9 +70,10 @@ class RehabSessionProvider extends ChangeNotifier {
   void simulateConnect() {
     _connectionState = BleConnectionState.connected;
     _isSimulated = true;
-    _wristConnected = true;
-    _lowerBackConnected = true;
-    _deviceName = 'Dual-sensor setup (Simulated)';
+    _wristAConnected = true;
+    _wristBConnected = true;
+    _trunkConnected = true;
+    _deviceName = 'Tri-sensor setup (Simulated)';
     _frameCount = 120;
     notifyListeners();
   }
@@ -71,23 +87,29 @@ class RehabSessionProvider extends ChangeNotifier {
   String get selectedExerciseName => kExerciseNames[_selectedExerciseIndex];
 
   DateTime? _sessionStart;
-  Duration get sessionDuration =>
-      _sessionStart == null
-          ? Duration.zero
-          : DateTime.now().difference(_sessionStart!);
+  Duration get sessionDuration => _sessionStart == null
+      ? Duration.zero
+      : DateTime.now().difference(_sessionStart!);
 
-  final List<ImuFrame> _window = [];
+  final Map<String, List<ImuFrame>> _sensorWindows = {
+    'wrist_a': <ImuFrame>[],
+    'wrist_b': <ImuFrame>[],
+    'trunk': <ImuFrame>[],
+  };
 
   // Static so _onFrame (called from a stream listener) can read it without an
   // instance qualifier. Value comes from FeatureExtractor so there is one
   // source of truth.
- // windowSize is 1000 (10 s × 100 Hz), NOT 50
-static const int _windowSize = FeatureExtractor.windowSize; // = 1000
+  // windowSize is 1000 (10 s × 100 Hz), NOT 50
+  static const int _windowSize = FeatureExtractor.windowSize; // = 1000
   /// Last 100 frames exposed to chart widgets.
-  List<ImuFrame> get chartWindow =>
-      _window.length > 100
-          ? _window.sublist(_window.length - 100)
-          : List.from(_window);
+  List<ImuFrame> get chartWindow {
+    final combined = _sensorWindows.values.expand((frames) => frames).toList();
+    combined.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    return combined.length > 100
+        ? combined.sublist(combined.length - 100)
+        : combined;
+  }
 
   int _frameCount = 0;
   int get frameCount => _frameCount;
@@ -140,6 +162,13 @@ static const int _windowSize = FeatureExtractor.windowSize; // = 1000
       notifyListeners();
     });
 
+    _ble.sensorStatus.listen((status) {
+      _wristAConnected = status['wrist_a'] ?? false;
+      _wristBConnected = status['wrist_b'] ?? false;
+      _trunkConnected = status['trunk'] ?? false;
+      notifyListeners();
+    });
+
     _ble.imuFrames.listen(_onFrame);
   }
 
@@ -148,8 +177,9 @@ static const int _windowSize = FeatureExtractor.windowSize; // = 1000
 
   Future<void> disconnect() async {
     _isSimulated = false;
-    _wristConnected = false;
-    _lowerBackConnected = false;
+    _wristAConnected = false;
+    _wristBConnected = false;
+    _trunkConnected = false;
     _connectionState = BleConnectionState.idle;
     stopSession();
     await _ble.disconnect();
@@ -161,7 +191,9 @@ static const int _windowSize = FeatureExtractor.windowSize; // = 1000
     if (!isConnected) return;
     _sessionActive = true;
     _sessionStart = DateTime.now();
-    _window.clear();
+    for (final window in _sensorWindows.values) {
+      window.clear();
+    }
     _sessionResults.clear();
     _latestResult = null;
     _recommendations = [];
@@ -197,8 +229,13 @@ static const int _windowSize = FeatureExtractor.windowSize; // = 1000
 
   // ── Frame processing ──────────────────────────────────────────────────────
   void _onFrame(ImuFrame frame) {
-    _window.add(frame);
-    if (_window.length > _windowSize) _window.removeAt(0);
+    final key = frame.sensorId;
+    final window = _sensorWindows[key];
+    if (window == null) return;
+
+    window.add(frame);
+    if (window.length > _windowSize) window.removeAt(0);
+
     _frameCount++;
     if (_frameCount % 10 == 0) notifyListeners(); // throttle chart redraws
   }
@@ -207,7 +244,9 @@ static const int _windowSize = FeatureExtractor.windowSize; // = 1000
   void _startInferenceTimer() {
     _inferenceTimer?.cancel();
     _inferenceTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
-      if (_window.length < _windowSize) return; // wait for full window
+      if (_sensorWindows.values.any((window) => window.length < _windowSize)) {
+        return; // wait for all three sensor windows to fill
+      }
       await _runInference();
     });
   }
@@ -218,30 +257,33 @@ static const int _windowSize = FeatureExtractor.windowSize; // = 1000
   }
 
   Future<void> _runInference() async {
-  try {
-     final features = FeatureExtractor.compute(List.from(_window));
-    final result = await _inferenceEngine.classify(features);
-    _latestResult = result;
-    _sessionResults.add(result);
-
-    // result.quality is the QualityLevel enum field.
-    // result.label is a String (e.g. "Good") — NOT for comparisons.
-    // QualityLevel is the correct enum (good, needsImprovement, poor).
-    if (result.quality != QualityLevel.good) {
-      _recommendations = await _recsEngine.getRecommendations(
-        exerciseIndex: _selectedExerciseIndex,
-        quality: result.quality,        // QualityLevel, not a String
+    try {
+      final features = FeatureExtractor.compute(
+        _sensorWindows['wrist_a']!,
+        _sensorWindows['wrist_b']!,
+        _sensorWindows['trunk']!,
       );
-    } else {
-      _recommendations = [];
-    }
+      final result = await _inferenceEngine.classify(features);
+      _latestResult = result;
+      _sessionResults.add(result);
 
-    notifyListeners();
-  } catch (e) {
-    debugPrint('[RehabSessionProvider] Inference error: $e');
+      // result.quality is the QualityLevel enum field.
+      // result.label is a String (e.g. "Good") — NOT for comparisons.
+      // QualityLevel is the correct enum (good, needsImprovement, poor).
+      if (result.quality != QualityLevel.good) {
+        _recommendations = await _recsEngine.getRecommendations(
+          exerciseIndex: _selectedExerciseIndex,
+          quality: result.quality, // QualityLevel, not a String
+        );
+      } else {
+        _recommendations = [];
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('[RehabSessionProvider] Inference error: $e');
+    }
   }
-}
-  
 
   // ── History persistence ───────────────────────────────────────────────────
   Future<void> _loadHistory() async {

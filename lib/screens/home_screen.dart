@@ -116,14 +116,14 @@ class _DashboardTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-
                 // ── Dual Sensor Status ──
                 SensorStatusBar(
                   state: provider.connectionState,
                   deviceName: provider.deviceName,
                   frameCount: provider.frameCount,
-                  wristConnected: provider.wristConnected,
-                  lowerBackConnected: provider.lowerBackConnected,
+                  wristAConnected: provider.wristAConnected,
+                  wristBConnected: provider.wristBConnected,
+                  trunkConnected: provider.trunkConnected,
                   isSimulated: provider.isSimulated,
                 ),
 
@@ -163,8 +163,7 @@ class _DashboardTab extends StatelessWidget {
                 ],
 
                 // ── Live Chart (always visible when connected) ──
-                if (isConnected)
-                  LiveChartWidget(frames: provider.chartWindow),
+                if (isConnected) LiveChartWidget(frames: provider.chartWindow),
 
                 const SizedBox(height: 24),
 
@@ -389,7 +388,8 @@ class _ActionArea extends StatelessWidget {
               _SheetOption(
                 icon: Icons.science_rounded,
                 title: 'Simulate Dual-Sensor Setup',
-                subtitle: 'Demo mode — instantly connects Wrist & Lower Back sensors',
+                subtitle:
+                    'Demo mode — instantly connects Wrist & Lower Back sensors',
                 iconColor: Colors.amber,
                 onTap: () {
                   Navigator.pop(context);
@@ -407,8 +407,9 @@ class _ActionArea extends StatelessWidget {
   Widget build(BuildContext context) {
     final isConnected = provider.isConnected;
     final sessionActive = provider.sessionActive;
-    final isScanning = provider.connectionState == BleConnectionState.scanning ||
-        provider.connectionState == BleConnectionState.connecting;
+    final isScanning =
+        provider.connectionState == BleConnectionState.scanning ||
+            provider.connectionState == BleConnectionState.connecting;
 
     // ── While scanning / connecting ──
     if (isScanning && !isConnected) {
@@ -525,7 +526,8 @@ class _ActionArea extends StatelessWidget {
         height: 56,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.qualityPoor.withValues(alpha: 0.6), width: 2),
+          border: Border.all(
+              color: AppTheme.qualityPoor.withValues(alpha: 0.6), width: 2),
           color: AppTheme.qualityPoor.withValues(alpha: 0.1),
         ),
         child: const Center(
@@ -747,7 +749,8 @@ class _BottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.surfaceCard,
         border: Border(
-            top: BorderSide(color: Colors.white.withValues(alpha: 0.05), width: 1)),
+            top: BorderSide(
+                color: Colors.white.withValues(alpha: 0.05), width: 1)),
       ),
       child: SafeArea(
         child: Padding(
@@ -755,10 +758,30 @@ class _BottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(icon: Icons.home_rounded, label: 'Home', index: 0, current: currentIndex, onTap: onTap),
-              _NavItem(icon: Icons.analytics_rounded, label: 'Feedback', index: 1, current: currentIndex, onTap: onTap),
-              _NavItem(icon: Icons.history_rounded, label: 'History', index: 2, current: currentIndex, onTap: onTap),
-              _NavItem(icon: Icons.settings_rounded, label: 'Settings', index: 3, current: currentIndex, onTap: onTap),
+              _NavItem(
+                  icon: Icons.home_rounded,
+                  label: 'Home',
+                  index: 0,
+                  current: currentIndex,
+                  onTap: onTap),
+              _NavItem(
+                  icon: Icons.analytics_rounded,
+                  label: 'Feedback',
+                  index: 1,
+                  current: currentIndex,
+                  onTap: onTap),
+              _NavItem(
+                  icon: Icons.history_rounded,
+                  label: 'History',
+                  index: 2,
+                  current: currentIndex,
+                  onTap: onTap),
+              _NavItem(
+                  icon: Icons.settings_rounded,
+                  label: 'Settings',
+                  index: 3,
+                  current: currentIndex,
+                  onTap: onTap),
             ],
           ),
         ),
@@ -792,7 +815,9 @@ class _NavItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: isActive ? AppTheme.accentBlue.withValues(alpha: 0.15) : Colors.transparent,
+          color: isActive
+              ? AppTheme.accentBlue.withValues(alpha: 0.15)
+              : Colors.transparent,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
