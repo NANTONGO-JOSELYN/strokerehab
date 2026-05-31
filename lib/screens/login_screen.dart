@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 import '../providers/auth_provider.dart';
+import 'clinician_portal_screen.dart';
+import 'home_screen.dart';
 import 'onboarding_screen.dart';
 import 'signup_screen.dart';
 
@@ -50,9 +52,21 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (success && mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      );
+      if (authProvider.hasCompletedOnboarding) {
+        if (authProvider.currentUser?.role == UserRole.clinician) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const ClinicianPortalScreen()),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        }
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
+      }
     } else if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(authProvider.errorMessage ?? 'Login failed')),
@@ -77,7 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -116,7 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => setState(() => _selectedRole = UserRole.patient),
+                            onTap: () => setState(
+                                () => _selectedRole = UserRole.patient),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
@@ -141,7 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => setState(() => _selectedRole = UserRole.clinician),
+                            onTap: () => setState(
+                                () => _selectedRole = UserRole.clinician),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
@@ -184,7 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Enter your email',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                      hintStyle:
+                          TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
@@ -231,7 +249,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       hintText: 'Enter your password',
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                      hintStyle:
+                          TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                       filled: true,
                       fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
@@ -264,8 +283,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               : Icons.visibility_outlined,
                           color: Colors.white.withValues(alpha: 0.7),
                         ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                       ),
                     ),
                   ),
@@ -323,7 +342,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          disabledBackgroundColor: Colors.white.withValues(alpha: 0.6),
+                          disabledBackgroundColor:
+                              Colors.white.withValues(alpha: 0.6),
                         ),
                         child: authProvider.isLoading
                             ? const SizedBox(
@@ -359,7 +379,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const SignUpScreen()),
                           );
                         },
                         child: const Text(

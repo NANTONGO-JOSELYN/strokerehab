@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/user.dart';
 import '../providers/auth_provider.dart';
+import 'clinician_portal_screen.dart';
+import 'home_screen.dart';
 import 'login_screen.dart';
 import 'onboarding_screen.dart';
 import 'role_selection_screen.dart';
@@ -13,7 +16,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -45,10 +49,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     if (authProvider.isAuthenticated) {
       // User is logged in
       if (authProvider.hasCompletedOnboarding) {
-        // Go to home dashboard (RoleSelectionScreen as temporary home)
-        nextScreen = const RoleSelectionScreen();
+        if (authProvider.currentUser?.role == UserRole.clinician) {
+          nextScreen = const ClinicianPortalScreen();
+        } else {
+          nextScreen = const HomeScreen();
+        }
       } else {
-        // Go to onboarding
         nextScreen = const OnboardingScreen();
       }
     } else {

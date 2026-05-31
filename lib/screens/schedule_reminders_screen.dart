@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ScheduleRemindersScreen extends StatefulWidget {
-  const ScheduleRemindersScreen({super.key});
+  final String? patientName;
+
+  const ScheduleRemindersScreen({super.key, this.patientName});
 
   @override
-  State<ScheduleRemindersScreen> createState() => _ScheduleRemindersScreenState();
+  State<ScheduleRemindersScreen> createState() =>
+      _ScheduleRemindersScreenState();
 }
 
 class _ScheduleRemindersScreenState extends State<ScheduleRemindersScreen> {
@@ -37,9 +40,11 @@ class _ScheduleRemindersScreenState extends State<ScheduleRemindersScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A1F2B),
         elevation: 0,
-        title: const Text(
-          'Schedule & Reminders',
-          style: TextStyle(
+        title: Text(
+          widget.patientName != null
+              ? 'Schedule for ${widget.patientName}'
+              : 'Schedule & Reminders',
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -68,7 +73,6 @@ class _ScheduleRemindersScreenState extends State<ScheduleRemindersScreen> {
             const SizedBox(height: 12),
             ..._schedules.map((schedule) => _ScheduleCard(schedule: schedule)),
             const SizedBox(height: 24),
-
             const Text(
               'Reminder Settings',
               style: TextStyle(
@@ -113,7 +117,15 @@ class _ScheduleRemindersScreenState extends State<ScheduleRemindersScreen> {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.patientName != null) ...[
+              Text(
+                'Patient: ${widget.patientName}',
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+            ],
             TextField(
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -146,7 +158,8 @@ class _ScheduleRemindersScreenState extends State<ScheduleRemindersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),

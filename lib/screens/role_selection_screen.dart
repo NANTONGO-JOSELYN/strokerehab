@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import 'clinician_portal_screen.dart';
 import 'home_screen.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
@@ -23,7 +24,8 @@ class RoleSelectionScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -107,10 +109,9 @@ class RoleSelectionScreen extends StatelessWidget {
                 // Clinician Card
                 GestureDetector(
                   onTap: () {
-                    // Navigate to clinician dashboard
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Clinician portal coming soon!'),
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => const ClinicianPortalScreen(),
                       ),
                     );
                   },
@@ -171,10 +172,12 @@ class RoleSelectionScreen extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () {
                       context.read<AuthProvider>().logout();
-                      Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/', (_) => false);
                     },
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.white.withValues(alpha: 0.5)),
+                      side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.5)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
