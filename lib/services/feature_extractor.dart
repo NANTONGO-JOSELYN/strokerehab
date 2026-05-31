@@ -17,36 +17,36 @@ class FeatureExtractor {
 
   static const List<String> channelNames = [
     'accelX', 'accelY', 'accelZ',
-    'gyroX',  'gyroY',  'gyroZ',
-    'magX',   'magY',   'magZ', // index 6 unused in 7-channel model; mag channels handled
+    'gyroX', 'gyroY', 'gyroZ',
+    'magX', 'magY',
+    'magZ', // index 6 unused in 7-channel model; mag channels handled
   ];
 
-  /// Compute all 424 features.
+  /// Compute all 424 features from three IMU windows (wrist A, wrist B, trunk).
   ///
-  /// [s1] must contain exactly [windowSize] frames.
-  /// [s2] can be null or empty → S2 features will be zero-filled.
-  static List<double> compute(List<ImuFrame> s1, [List<ImuFrame>? s2]) {
+  /// Each sensor window must contain exactly [windowSize] frames.
+  static List<double> compute(
+    List<ImuFrame> s1,
+    List<ImuFrame> s2,
+    List<ImuFrame> s3,
+  ) {
     assert(s1.length == windowSize,
         'Window must be $windowSize frames, got ${s1.length}');
+    assert(s2.length == windowSize,
+        'Window must be $windowSize frames, got ${s2.length}');
+    assert(s3.length == windowSize,
+        'Window must be $windowSize frames, got ${s3.length}');
 
     final features = <double>[];
 
     // ── S1 features ──────────────────────────────────────────────────────────
     features.addAll(_sensorFeatures(s1));
 
-    // ── S2 features (zero-filled if no S2 available) ─────────────────────────
-    if (s2 != null && s2.length == windowSize) {
-      features.addAll(_sensorFeatures(s2));
-    } else {
-      features.addAll(List.filled(_sensorFeatureCount, 0.0));
-    }
+    // ── S2 features ──────────────────────────────────────────────────────────
+    features.addAll(_sensorFeatures(s2));
 
-    // ── Cross-sensor correlations (6) ─────────────────────────────────────────
-    if (s2 != null && s2.length == windowSize) {
-      features.addAll(_crossCorrelations(s1, s2));
-    } else {
-      features.addAll(List.filled(6, 0.0));
-    }
+    // ── Cross-sensor correlations (18) ────────────────────────────────────────
+    features.addAll(_crossCorrelations3(s1, s2, s3));
 
     // Pad / trim to exactly 424
     if (features.length < featureCount) {
@@ -81,32 +81,34 @@ class FeatureExtractor {
     final channels = [ax, ay, az, gx, gy, gz, mx];
 
     for (final ch in channels) {
-      features.addAll(_channelStats(ch));     // 12 statistical
-      features.addAll(_channelSpectral(ch));  // 5 spectral → total 17
+      features.addAll(_channelStats(ch)); // 12 statistical
+      features.addAll(_channelSpectral(ch)); // 5 spectral → total 17
     }
     // 7 × 17 = 119
 
     // ── Pitch & roll features ─────────────────────────────────────────────
     final pitchSeries = List<double>.generate(
         frames.length,
-        (i) => math.atan2(frames[i].accelY, frames[i].accelZ.abs()) *
+        (i) =>
+            math.atan2(frames[i].accelY, frames[i].accelZ.abs()) *
             (180 / math.pi));
     final rollSeries = List<double>.generate(
         frames.length,
-        (i) => math.atan2(frames[i].accelX, frames[i].accelZ.abs()) *
+        (i) =>
+            math.atan2(frames[i].accelX, frames[i].accelZ.abs()) *
             (180 / math.pi));
 
     features.addAll(_angleSeries(pitchSeries)); // 5
-    features.addAll(_angleSeries(rollSeries));  // 5
+    features.addAll(_angleSeries(rollSeries)); // 5
     // 10
 
     // ── Angular velocity composite ─────────────────────────────────────────
-    final angVel = List<double>.generate(
-        frames.length, (i) => frames[i].gyroMagnitude);
-    features.add(_mean(angVel));            // mean
-    features.add(_max(angVel));             // max
-    features.add(_std(angVel));             // std
-    features.add(_smoothness(angVel));      // smoothness
+    final angVel =
+        List<double>.generate(frames.length, (i) => frames[i].gyroMagnitude);
+    features.add(_mean(angVel)); // mean
+    features.add(_max(angVel)); // max
+    features.add(_std(angVel)); // std
+    features.add(_smoothness(angVel)); // smoothness
     // 4
 
     // ── Joint integrated angles (3 gyro axes) ─────────────────────────────
@@ -116,8 +118,9 @@ class FeatureExtractor {
     const dt = 0.01; // 100 Hz
     for (final gyroChannel in [gx, gy, gz]) {
       final integral = _cumTrapz(gyroChannel, dt);
-      features.add(_range(integral));        // range
-      features.add(_max(integral.map((v) => v.abs()).toList())); // max excursion
+      features.add(_range(integral)); // range
+      features
+          .add(_max(integral.map((v) => v.abs()).toList())); // max excursion
     }
     // 6 → total 139; pad to 151
     features.addAll(List.filled(12, 0.0)); // reserved padding
@@ -127,17 +130,17 @@ class FeatureExtractor {
 
   // ── Statistical features (12) ─────────────────────────────────────────────
   static List<double> _channelStats(List<double> x) {
-    final m   = _mean(x);
-    final s   = _std(x);
-    final v   = s * s;
-    final mn  = _min(x);
-    final mx  = _max(x);
-    final r   = mx - mn;
+    final m = _mean(x);
+    final s = _std(x);
+    final v = s * s;
+    final mn = _min(x);
+    final mx = _max(x);
+    final r = mx - mn;
     final rms = _rms(x);
-    final sk  = _skew(x, m, s);
-    final ku  = _kurtosis(x, m, s);
-    final e   = _energy(x);
-    final pw  = e / x.length;
+    final sk = _skew(x, m, s);
+    final ku = _kurtosis(x, m, s);
+    final e = _energy(x);
+    final pw = e / x.length;
     final zcr = _zcr(x);
     return [m, s, v, mn, mx, r, rms, sk, ku, e, pw, zcr];
   }
@@ -149,9 +152,9 @@ class FeatureExtractor {
     if (n == 0) return List.filled(5, 0.0);
 
     final total = spectrum.fold(0.0, (a, b) => a + b);
-    final maxP  = _max(spectrum);
+    final maxP = _max(spectrum);
     final meanP = total / n;
-    final domF  = spectrum.indexOf(maxP).toDouble();
+    final domF = spectrum.indexOf(maxP).toDouble();
 
     // Spectral entropy
     double entropy = 0;
@@ -166,9 +169,9 @@ class FeatureExtractor {
 
     // Band power (split spectrum into thirds)
     final third = n ~/ 3;
-    final lowP  = _bandPower(spectrum, 0, third);
-    final midP  = _bandPower(spectrum, third, 2 * third);
-    final hiP   = _bandPower(spectrum, 2 * third, n);
+    final lowP = _bandPower(spectrum, 0, third);
+    final midP = _bandPower(spectrum, third, 2 * third);
+    final hiP = _bandPower(spectrum, 2 * third, n);
     // Return 5 features (dropping hiP to stay at 5)
     return [maxP, meanP, domF, entropy, lowP + midP + hiP];
   }
@@ -182,16 +185,25 @@ class FeatureExtractor {
         _max(series),
       ];
 
+  // ── Cross-sensor correlations (18) ───────────────────────────────────────
+  static List<double> _crossCorrelations3(
+      List<ImuFrame> s1, List<ImuFrame> s2, List<ImuFrame> s3) {
+    return [
+      ..._crossCorrelations(s1, s2),
+      ..._crossCorrelations(s1, s3),
+      ..._crossCorrelations(s2, s3),
+    ];
+  }
+
   // ── Cross-sensor correlations (6) ────────────────────────────────────────
-  static List<double> _crossCorrelations(
-      List<ImuFrame> s1, List<ImuFrame> s2) {
+  static List<double> _crossCorrelations(List<ImuFrame> s1, List<ImuFrame> s2) {
     return [
       _pearson(_col(s1, (f) => f.accelX), _col(s2, (f) => f.accelX)),
       _pearson(_col(s1, (f) => f.accelY), _col(s2, (f) => f.accelY)),
       _pearson(_col(s1, (f) => f.accelZ), _col(s2, (f) => f.accelZ)),
-      _pearson(_col(s1, (f) => f.gyroX),  _col(s2, (f) => f.gyroX)),
-      _pearson(_col(s1, (f) => f.gyroY),  _col(s2, (f) => f.gyroY)),
-      _pearson(_col(s1, (f) => f.gyroZ),  _col(s2, (f) => f.gyroZ)),
+      _pearson(_col(s1, (f) => f.gyroX), _col(s2, (f) => f.gyroX)),
+      _pearson(_col(s1, (f) => f.gyroY), _col(s2, (f) => f.gyroY)),
+      _pearson(_col(s1, (f) => f.gyroZ), _col(s2, (f) => f.gyroZ)),
     ];
   }
 
@@ -216,7 +228,8 @@ class FeatureExtractor {
 
   // ── Math helpers ──────────────────────────────────────────────────────────
 
-  static List<double> _col(List<ImuFrame> frames, double Function(ImuFrame) fn) =>
+  static List<double> _col(
+          List<ImuFrame> frames, double Function(ImuFrame) fn) =>
       frames.map(fn).toList();
 
   static double _mean(List<double> x) {
@@ -238,8 +251,7 @@ class FeatureExtractor {
   static double _rms(List<double> x) =>
       math.sqrt(x.fold(0.0, (a, b) => a + b * b) / x.length);
 
-  static double _energy(List<double> x) =>
-      x.fold(0.0, (a, b) => a + b * b);
+  static double _energy(List<double> x) => x.fold(0.0, (a, b) => a + b * b);
 
   static double _zcr(List<double> x) {
     int count = 0;
@@ -303,8 +315,8 @@ class FeatureExtractor {
       final xa = a[i] - ma;
       final xb = b[i] - mb;
       num += xa * xb;
-      da  += xa * xa;
-      db  += xb * xb;
+      da += xa * xa;
+      db += xb * xb;
     }
     final denom = math.sqrt(da * db);
     return denom == 0 ? 0 : num / denom;
